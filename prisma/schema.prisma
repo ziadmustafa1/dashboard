@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id            String        @id @default(uuid())
+  name          String
+  subcategories Subcategory[]
+  products      Product[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Subcategory {
+  id         String    @id @default(uuid())
+  name       String
+  category   Category  @relation(fields: [categoryId], references: [id])
+  categoryId String
+  products   Product[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model Brand {
+  id        String    @id @default(uuid())
+  name      String
+  image     String
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Product {
+  id            String      @id @default(uuid())
+  name          String
+  description   String
+  price         Float
+  image         String
+  hoverImage    String
+  color         String
+  views         Int         @default(0)
+  sales         Int         @default(0)
+  category      Category    @relation(fields: [categoryId], references: [id])
+  categoryId    String
+  subcategory   Subcategory @relation(fields: [subcategoryId], references: [id])
+  subcategoryId String
+  brand         Brand       @relation(fields: [brandId], references: [id])
+  brandId       String
+  orders        Order[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Order {
+  id            String   @id @default(uuid())
+  product       Product  @relation(fields: [productId], references: [id])
+  productId     String
+  quantity      Int
+  totalPrice    Float
+  customerName  String
+  customerEmail String
+  customerPhone String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
